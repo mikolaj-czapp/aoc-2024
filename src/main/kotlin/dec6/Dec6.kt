@@ -80,10 +80,9 @@ class Dec6 {
             while (isStepSafe(guard.position, guard.guardDirection.vector())) {
                 guardUniquePositions.add(guard.position)
                 guard =
-                    if (isStepUnobstructed(guard)) {
-                        guard.move()
-                    } else {
-                        guard.rotate().move()
+                    when (isStepUnobstructed(guard)) {
+                        true -> guard.move()
+                        false -> guard.rotate().move()
                     }
             }
             guardUniquePositions.add(guard.position)
@@ -96,10 +95,9 @@ class Dec6 {
             while (isStepSafe(guard.position, guard.guardDirection.vector())) {
                 guardUniquePositions.add(guard)
                 guard =
-                    if (isStepUnobstructed(guard, obstruction)) {
-                        guard.move()
-                    } else {
-                        guard.rotate()
+                    when (isStepUnobstructed(guard, obstruction)) {
+                        true -> guard.move()
+                        false -> guard.rotate()
                     }
                 if (guardUniquePositions.contains(guard)) {
                     return true
