@@ -1,6 +1,10 @@
 package org.example.dec4
 
 import org.example.InputReader
+import org.example.common.SquareMatrix
+import org.example.common.add
+import org.example.common.at
+import org.example.common.times
 
 fun main() {
     val inputString = InputReader().readFile("dec4/input.txt")
@@ -25,12 +29,7 @@ class Dec4 {
         private class WordMatrix(
             val charMatrix: List<List<Char>>,
             val word: String,
-        ) {
-            init {
-                val numberOfRows = charMatrix.size
-                charMatrix.forEach { row -> assert(row.size == numberOfRows) }
-            }
-
+        ) : SquareMatrix(charMatrix) {
             fun getWordCount(): Int =
                 charMatrix
                     .flatMapIndexed { indexRow: Int, chars: List<Char> ->
@@ -77,9 +76,9 @@ class Dec4 {
                 directions.forEach { direction ->
                     if (word.all {
                             val index = word.indexOf(it)
-                            if (isValidDirection(position, direction, index)) {
+                            if (isMoveInsideBounds(position, direction.times(index))) {
                                 return@all it ==
-                                    charMatrix[position.first + direction.first * index][position.second + direction.second * index]
+                                    charMatrix.at(position.add(direction.times(index)))
                             }
                             return@all false
                         }
@@ -97,7 +96,7 @@ class Dec4 {
                         Pair(1, -1),
                     )
                 if (rightDiagonal.all {
-                        isValidDirection(position, it, 1)
+                        isMoveInsideBounds(position, it)
                     }
                 ) {
                     return (
@@ -119,7 +118,7 @@ class Dec4 {
                         Pair(-1, -1),
                     )
                 if (leftDiagonal.all {
-                        isValidDirection(position, it, 1)
+                        isMoveInsideBounds(position, it)
                     }
                 ) {
                     return (
@@ -133,16 +132,6 @@ class Dec4 {
                 }
                 return false
             }
-
-            private fun isValidDirection(
-                position: Pair<Int, Int>,
-                direction: Pair<Int, Int>,
-                index: Int,
-            ): Boolean =
-                position.first + direction.first * index >= 0 &&
-                    position.second + direction.second * index >= 0 &&
-                    position.first + direction.first * index < charMatrix.size &&
-                    position.second + direction.second * index < charMatrix.size
         }
     }
 }

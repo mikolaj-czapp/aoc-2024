@@ -1,22 +1,25 @@
 package org.example.dec6
 
 import org.example.InputReader
+import org.example.common.SquareMatrix
+import org.example.common.add
+import org.example.common.at
 
 fun main() {
-    val inputString = InputReader().readFile("dec6/input.txt")
-//    println("Result: ${Dec6.task1(inputString)}")
+    val inputString = InputReader().readFile("dec6/test.txt")
+    println("Result: ${Dec6.task1(inputString)}")
     println("Result: ${Dec6.task2(inputString)}")
 }
 
 class Dec6 {
     companion object {
         fun task1(input: String): Int {
-            val map = MapMatrix(input.split(Regex("\n")).map { it.toList() })
+            val map = GuardMapMatrix(input.split(Regex("\n")).map { it.toList() })
             return map.getUniqueGuardPathPositions().size
         }
 
         fun task2(input: String): Int {
-            val map = MapMatrix(input.split(Regex("\n")).map { it.toList() })
+            val map = GuardMapMatrix(input.split(Regex("\n")).map { it.toList() })
 
             return map.positions
                 .flatMapIndexed { rowIndex, row ->
@@ -27,10 +30,81 @@ class Dec6 {
         }
     }
 
-    private class MapMatrix(
-        val positions: List<List<Char>>,
-    ) {
+    private class GuardMapMatrix(
+        positions: List<List<Char>>,
+    ) : SquareMatrix(positions) {
         private val OBSTRUCTION_CHAR = '#'
+
+        init {
+            val numberOfRows = positions.size
+            positions.forEach { row -> assert(row.size == numberOfRows) }
+        }
+
+        fun getUniqueGuardPathPositions(): Set<Pair<Int, Int>> {
+            var guard = Guard(findInitialGuardPosition(), GuardDirection.UP)
+            val guardUniquePositions = mutableSetOf<Pair<Int, Int>>()
+            while (isMoveInsideBounds(guard.position, guard.guardDirection.vector())) {
+                guardUniquePositions.add(guard.position)
+                guard =
+                    when (isStepUnobstructed(guard)) {
+                        true -> guard.move()
+                        false -> guard.rotate().move()
+                    }
+            }
+            guardUniquePositions.add(guard.position)
+            return guardUniquePositions
+        }
+
+        fun doesObstructionCauseLoop(obstruction: Pair<Int, Int>): Boolean {
+            var guard = Guard(findInitialGuardPosition(), GuardDirection.UP)
+            val guardUniquePositions = mutableSetOf<Guard>()
+            while (isMoveInsideBounds(guard.position, guard.guardDirection.vector())) {
+                guardUniquePositions.add(guard)
+                guard =
+                    when (isStepUnobstructed(guard, obstruction)) {
+                        true -> guard.move()
+                        false -> guard.rotate()
+                    }
+                if (guardUniquePositions.contains(guard)) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        private fun findInitialGuardPosition(): Pair<Int, Int> {
+            positions.forEachIndexed { i, chars ->
+                chars.forEachIndexed { j, char ->
+                    if (char == GuardDirection.UP.char()) {
+                        return Pair(i, j)
+                    }
+                }
+            }
+            throw NoSuchElementException("Cannot find initial guard position")
+        }
+
+        private fun isStepUnobstructed(guard: Guard): Boolean = positions.at(guard.move().position) != OBSTRUCTION_CHAR
+
+        private fun isStepUnobstructed(
+            guard: Guard,
+            additionalObstruction: Pair<Int, Int>,
+        ): Boolean {
+            val moved = guard.move().position
+            return additionalObstruction != moved && positions.at(moved) != OBSTRUCTION_CHAR
+        }
+
+        private data class Guard(
+            val position: Pair<Int, Int>,
+            val guardDirection: GuardDirection,
+        ) {
+            fun move() =
+                Guard(
+                    position.add(guardDirection.vector()),
+                    guardDirection,
+                )
+
+            fun rotate() = Guard(position, guardDirection.rotate())
+        }
 
         private enum class GuardDirection {
             UP {
@@ -67,90 +141,6 @@ class Dec6 {
             abstract fun vector(): Pair<Int, Int>
 
             abstract fun char(): Char
-        }
-
-        init {
-            val numberOfRows = positions.size
-            positions.forEach { row -> assert(row.size == numberOfRows) }
-        }
-
-        fun getUniqueGuardPathPositions(): Set<Pair<Int, Int>> {
-            var guard = Guard(findInitialGuardPosition(), GuardDirection.UP)
-            val guardUniquePositions = mutableSetOf<Pair<Int, Int>>()
-            while (isStepSafe(guard.position, guard.guardDirection.vector())) {
-                guardUniquePositions.add(guard.position)
-                guard =
-                    when (isStepUnobstructed(guard)) {
-                        true -> guard.move()
-                        false -> guard.rotate().move()
-                    }
-            }
-            guardUniquePositions.add(guard.position)
-            return guardUniquePositions
-        }
-
-        fun doesObstructionCauseLoop(obstruction: Pair<Int, Int>): Boolean {
-            var guard = Guard(findInitialGuardPosition(), GuardDirection.UP)
-            val guardUniquePositions = mutableSetOf<Guard>()
-            while (isStepSafe(guard.position, guard.guardDirection.vector())) {
-                guardUniquePositions.add(guard)
-                guard =
-                    when (isStepUnobstructed(guard, obstruction)) {
-                        true -> guard.move()
-                        false -> guard.rotate()
-                    }
-                if (guardUniquePositions.contains(guard)) {
-                    return true
-                }
-            }
-            return false
-        }
-
-        private fun findInitialGuardPosition(): Pair<Int, Int> {
-            positions.forEachIndexed { i, chars ->
-                chars.forEachIndexed { j, char ->
-                    if (char == GuardDirection.UP.char()) {
-                        return Pair(i, j)
-                    }
-                }
-            }
-            throw NoSuchElementException("Cannot find initial guard position")
-        }
-
-        private fun isStepSafe(
-            position: Pair<Int, Int>,
-            direction: Pair<Int, Int>,
-        ): Boolean =
-            position.first + direction.first >= 0 &&
-                position.second + direction.second >= 0 &&
-                position.first + direction.first < positions.size &&
-                position.second + direction.second < positions.size
-
-        private fun isStepUnobstructed(
-            guard: Guard,
-            additionalObstruction: Pair<Int, Int>? = null,
-        ): Boolean {
-            val moved = guard.move().position
-            if (additionalObstruction != null) {
-                return additionalObstruction != moved && positions[moved.first][moved.second] != OBSTRUCTION_CHAR
-            }
-            return positions[moved.first][moved.second] != OBSTRUCTION_CHAR
-        }
-
-        private data class Guard(
-            val position: Pair<Int, Int>,
-            val guardDirection: GuardDirection,
-        ) {
-            fun move() =
-                Guard(
-                    Pair(
-                        position.first + guardDirection.vector().first,
-                        position.second + guardDirection.vector().second,
-                    ),
-                    guardDirection,
-                )
-
-            fun rotate() = Guard(position, guardDirection.rotate())
         }
     }
 }
