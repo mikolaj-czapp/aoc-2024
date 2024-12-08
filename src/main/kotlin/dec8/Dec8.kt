@@ -13,6 +13,7 @@ import org.example.common.update
 fun main() {
     val inputString = InputReader().readFile("dec8/input.txt")
     println("Result: ${Dec8.task1(inputString)}")
+    println("Result: ${Dec8.task2(inputString)}")
 }
 
 class Dec8 {
@@ -23,10 +24,24 @@ class Dec8 {
             val antidotePositions =
                 antennas.map { (_, positions) ->
                     val antennaPairs = positions.cartesianProduct().removeDiagonal()
+                    antennaPairs.map { findAntidote(it.first, it.second) }.filter { matrix.isPositionInsideBounds(it) }
+                }
+            return antidotePositions
+                .flatten()
+                .toSet()
+                .size
+        }
+
+        fun task2(input: String): Int {
+            val matrix = prepareInput(input)
+            val antennas = findAntennas(matrix)
+            val antidotePositions =
+                antennas.map { (_, positions) ->
+                    val antennaPairs = positions.cartesianProduct().removeDiagonal()
                     antennaPairs
-                        .filter {
-                            return@filter matrix.isPositionInsideBounds(findAntidote(it.first, it.second))
-                        }.map { findAntidote(it.first, it.second) }
+                        .map { findAntidotes(it.first, it.second, matrix.positions.size) }
+                        .flatten()
+                        .filter { matrix.isPositionInsideBounds(it) }
                 }
             return antidotePositions
                 .flatten()
@@ -49,6 +64,17 @@ class Dec8 {
         private fun findAntidote(
             a1: Position,
             b1: Position,
-        ): Position = a1.add(b1.sub(a1).times(2))
+        ): Position = findAntidotes(a1, b1, 1)[1]
+
+        private fun findAntidotes(
+            a1: Position,
+            b1: Position,
+            radius: Int,
+        ): List<Position> {
+            val vector = b1.sub(a1)
+            return IntRange(0, radius).map {
+                b1.add(vector.times(it))
+            }
+        }
     }
 }
