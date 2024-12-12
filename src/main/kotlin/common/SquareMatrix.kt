@@ -3,8 +3,8 @@ package org.example.common
 typealias Position = Pair<Int, Int>
 typealias Vector = Pair<Int, Int>
 
-open class SquareMatrix(
-    val positions: List<List<Char>>,
+open class SquareMatrix<T>(
+    val positions: List<List<T>>,
 ) {
     init {
         val numberOfRows = positions.size

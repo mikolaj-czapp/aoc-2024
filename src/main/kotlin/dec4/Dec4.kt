@@ -29,7 +29,7 @@ class Dec4 {
         private class WordMatrix(
             val charMatrix: List<List<Char>>,
             val word: String,
-        ) : SquareMatrix(charMatrix) {
+        ) : SquareMatrix<Char>(charMatrix) {
             fun getWordCount(): Int =
                 charMatrix
                     .flatMapIndexed { indexRow: Int, chars: List<Char> ->

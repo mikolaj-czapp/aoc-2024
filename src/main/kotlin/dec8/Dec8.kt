@@ -49,9 +49,9 @@ class Dec8 {
                 .size
         }
 
-        private fun prepareInput(input: String): SquareMatrix = SquareMatrix(input.split(Regex(("\n"))).map { it.toList() })
+        private fun prepareInput(input: String): SquareMatrix<Char> = SquareMatrix(input.split(Regex(("\n"))).map { it.toList() })
 
-        private fun findAntennas(matrix: SquareMatrix): Map<Char, List<Position>> {
+        private fun findAntennas(matrix: SquareMatrix<Char>): Map<Char, List<Position>> {
             val result = mutableMapOf<Char, MutableList<Position>>()
             matrix.positions.forEachIndexed { index, chars ->
                 chars.forEachIndexed { idx, c ->

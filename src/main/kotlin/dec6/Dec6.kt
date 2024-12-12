@@ -1,7 +1,9 @@
 package org.example.dec6
 
 import org.example.InputReader
+import org.example.common.Direction
 import org.example.common.SquareMatrix
+import org.example.common.Vector
 import org.example.common.add
 import org.example.common.at
 
@@ -32,13 +34,8 @@ class Dec6 {
 
     private class GuardMapMatrix(
         positions: List<List<Char>>,
-    ) : SquareMatrix(positions) {
+    ) : SquareMatrix<Char>(positions) {
         private val OBSTRUCTION_CHAR = '#'
-
-        init {
-            val numberOfRows = positions.size
-            positions.forEach { row -> assert(row.size == numberOfRows) }
-        }
 
         fun getUniqueGuardPathPositions(): Set<Pair<Int, Int>> {
             var guard = Guard(findInitialGuardPosition(), GuardDirection.UP)
@@ -138,7 +135,7 @@ class Dec6 {
 
             abstract fun rotate(): GuardDirection
 
-            abstract fun vector(): Pair<Int, Int>
+            abstract fun vector(): Vector
 
             abstract fun char(): Char
         }
