@@ -1,5 +1,8 @@
 package org.example.common
 
+typealias Position = Pair<Int, Int>
+typealias Vector = Pair<Int, Int>
+
 open class SquareMatrix(
     val positions: List<List<Char>>,
 ) {
@@ -8,11 +11,11 @@ open class SquareMatrix(
         positions.forEach { row -> assert(row.size == numberOfRows) }
     }
 
+    fun isPositionInsideBounds(position: Position): Boolean =
+        position.first >= 0 && position.first < positions.size && position.second >= 0 && position.second < positions.size
+
     fun isMoveInsideBounds(
-        position: Pair<Int, Int>,
-        direction: Pair<Int, Int>,
-    ): Boolean {
-        val result = position.add(direction)
-        return result.first >= 0 && result.first < positions.size && result.second >= 0 && result.second < positions.size
-    }
+        position: Position,
+        direction: Vector,
+    ): Boolean = isPositionInsideBounds(position.add(direction))
 }
