@@ -1,10 +1,10 @@
-package org.example.dec1.task1
+package org.example.dec1
 
 import org.example.InputReader
 import kotlin.math.abs
 
 fun main() {
-    val inputString = InputReader().readFile("dec1/task1/input1.txt")
+    val inputString = InputReader().readFile("dec1/input1.txt")
     val listOfRows = inputString.split(Regex("\\n+")).filterNot { it.isEmpty() }
     val pairOfListsSorted =
         listOfRows

@@ -1,10 +1,10 @@
-package org.example.dec2.task1
+package org.example.dec2
 
 import org.example.InputReader
 import kotlin.math.abs
 
 fun main() {
-    val inputReader = InputReader().getBufferedReader("dec2/task1/input1.txt")
+    val inputReader = InputReader().getBufferedReader("dec2/input1.txt")
 
     var correctReports = 0
     inputReader.lines().forEach {
