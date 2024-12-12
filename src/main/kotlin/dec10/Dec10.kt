@@ -37,7 +37,7 @@ class Dec10 {
             val ends = mutableListOf<Position>()
             map.positions.forEachIndexed { index, heights ->
                 heights.forEachIndexed { idx, height ->
-                    if (height == 4) {
+                    if (height == 9) {
                         ends.add(Position(index, idx))
                     }
                     if (height == 0) {
