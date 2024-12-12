@@ -24,3 +24,6 @@ hs_err_pid*
 replay_pid*
 
 /.idea/
+
+# Do not commit real input for task
+/src/main/kotlin/dec*/input.txt
