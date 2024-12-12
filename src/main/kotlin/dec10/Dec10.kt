@@ -11,6 +11,7 @@ import org.example.common.isAdjacentTo
 fun main() {
     val inputString = InputReader().readFile("dec10/test.txt")
     println("Result: ${Dec10.task1(inputString)}")
+    println("Result: ${Dec10.task2(inputString)}")
 }
 
 class Dec10 {
@@ -23,6 +24,14 @@ class Dec10 {
             }
         }
 
+        fun task2(inputString: String): Int {
+            val matrix = prepareInput(inputString)
+            val trails = findTrails(matrix)
+            return trails.trailStarts.sumOf {
+                calculateTrailheadRating(matrix, it, trails.trailEnds)
+            }
+        }
+
         private fun prepareInput(input: String): SquareMatrix<Int> =
             SquareMatrix(input.split(Regex(("\n"))).map { it.toList().map { it.digitToInt() } })
 
@@ -31,6 +40,12 @@ class Dec10 {
             start: Position,
             ends: List<Position>,
         ) = ends.count { isPositionReachable(map, start, it) }
+
+        private fun calculateTrailheadRating(
+            map: SquareMatrix<Int>,
+            start: Position,
+            ends: List<Position>,
+        ) = ends.sumOf { countTrailsBetweenPositions(map, start, it) }
 
         private fun findTrails(map: SquareMatrix<Int>): Trails {
             val starts = mutableListOf<Position>()
@@ -68,6 +83,24 @@ class Dec10 {
                     isPositionUphill(map, initialPosition, initialPosition.add(it.vector()))
                 }.any {
                     isPositionReachable(map, initialPosition.add(it.vector()), destinationPosition)
+                }
+        }
+
+        private fun countTrailsBetweenPositions(
+            map: SquareMatrix<Int>,
+            initialPosition: Position,
+            destinationPosition: Position,
+        ): Int {
+            if (isPositionUphill(map, initialPosition, destinationPosition)) {
+                return 1
+            }
+            return Direction.entries
+                .filter {
+                    map.isPositionInsideBounds(initialPosition.add(it.vector()))
+                }.filter {
+                    isPositionUphill(map, initialPosition, initialPosition.add(it.vector()))
+                }.sumOf {
+                    countTrailsBetweenPositions(map, initialPosition.add(it.vector()), destinationPosition)
                 }
         }
 
