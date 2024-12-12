@@ -24,6 +24,17 @@ fun <A, B> MutableMap<A, MutableList<B>>.update(
     }
 }
 
+fun MutableMap<Long, Long>.add(
+    key: Long,
+    value: Long,
+) {
+    if (this.containsKey(key)) {
+        this[key] = this[key]!!.plus(value)
+    } else {
+        this[key] = value
+    }
+}
+
 fun <A> Collection<A>.cartesianProduct(): List<Pair<A, A>> =
     this.flatMap { a ->
         this.map { it to a }
