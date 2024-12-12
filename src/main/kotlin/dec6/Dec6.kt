@@ -99,7 +99,7 @@ class Dec6 {
                     if (isStepUnobstructed(guard, obstruction)) {
                         guard.move()
                     } else {
-                        guard.rotate().move()
+                        guard.rotate()
                     }
                 if (guardUniquePositions.contains(guard)) {
                     return true
