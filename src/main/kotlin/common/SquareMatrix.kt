@@ -18,4 +18,5 @@ open class SquareMatrix<T>(
         position: Position,
         direction: Vector,
     ): Boolean = isPositionInsideBounds(position.add(direction))
+
 }

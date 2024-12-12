@@ -1,9 +1,9 @@
 package org.example.dec10
 
 import org.example.InputReader
+import org.example.common.Direction
 import org.example.common.Position
 import org.example.common.SquareMatrix
-import org.example.common.Vector
 import org.example.common.add
 import org.example.common.at
 import org.example.common.isAdjacentTo
@@ -112,22 +112,5 @@ class Dec10 {
             map.positions.at(destinationPosition) == map.positions.at(
                 initialPosition,
             ) + 1
-
-        private enum class Direction {
-            UP {
-                override fun vector() = Pair(-1, 0)
-            },
-            RIGHT {
-                override fun vector() = Pair(0, 1)
-            },
-            DOWN {
-                override fun vector() = Pair(1, 0)
-            },
-            LEFT {
-                override fun vector() = Pair(0, -1)
-            }, ;
-
-            abstract fun vector(): Vector
-        }
     }
 }

@@ -12,6 +12,9 @@ enum class Direction {
     },
     LEFT {
         override fun vector() = Pair(0, -1)
+    },
+    STAY {
+        override fun vector() = Pair(0, 0)
     }, ;
 
     abstract fun vector(): Pair<Int, Int>
